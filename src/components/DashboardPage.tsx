@@ -635,6 +635,8 @@ export default function DashboardPage() {
         <div className="video-grid">
           {paginatedVideos.map((video) => {
             const previewUrl = previewUrlFor(video);
+            const canDeleteVideo =
+              user?.role === "admin" || (user?.role === "editor" && video.ownerId === user.id);
 
             return (
               <article className="video-card" key={video._id}>
@@ -655,7 +657,7 @@ export default function DashboardPage() {
                     <span>{video.processingStatus}</span>
                   </div>
                 </div>
-                {(user?.role === "editor" || user?.role === "admin") && (
+                {canDeleteVideo && (
                   <button
                     type="button"
                     className="video-delete-btn"

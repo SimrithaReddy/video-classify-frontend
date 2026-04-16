@@ -1,5 +1,5 @@
-import { createContext, useContext, useMemo, useState } from "react";
-import { attachToken, api } from "../api/client";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { attachToken, api, registerAuthExpiredHandler } from "../api/client";
 import type { User } from "../types";
 
 interface AuthValue {
@@ -46,6 +46,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: nextToken, user: nextUser }));
   };
+
+  useEffect(() => {
+    registerAuthExpiredHandler(() => persist(null, null));
+    return () => {
+      registerAuthExpiredHandler(null);
+    };
+  }, []);
 
   const value = useMemo<AuthValue>(
     () => ({

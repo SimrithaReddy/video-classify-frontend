@@ -24,6 +24,7 @@ export interface PlaybackVariants {
 
 export interface Video {
   _id: string;
+  ownerId?: string;
   accessScope?: "restricted" | "tenant";
   assignedViewerIds?: string[];
   title: string;
