@@ -21,6 +21,7 @@ type UploadStage = "idle" | "uploading" | "processing" | "processed" | "failed";
 
 const VIDEOS_PER_PAGE = 8;
 const SUPPORTED_VIDEO_MIME_TYPES = ["video/mp4", "video/webm", "video/ogg", "video/quicktime"];
+const MAX_VIDEO_UPLOAD_SIZE_BYTES = 70 * 1024 * 1024;
 
 const defaultFilters: Filters = {
   sensitivityStatus: "",
@@ -235,6 +236,14 @@ export default function DashboardPage() {
 
     if (!SUPPORTED_VIDEO_MIME_TYPES.includes(selectedFile.type)) {
       const message = "Only video files are supported. Please choose a valid video file.";
+      setError(message);
+      setUploadStage("failed");
+      window.alert(message);
+      return;
+    }
+
+    if (selectedFile.size > MAX_VIDEO_UPLOAD_SIZE_BYTES) {
+      const message = "Video size must be 70 MB or less.";
       setError(message);
       setUploadStage("failed");
       window.alert(message);
