@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { io } from "socket.io-client";
-import { API_BASE_URL, api } from "../api/client";
+import { API_BASE_URL, SOCKET_BASE_URL, api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import type { TenantUser, Video } from "../types";
 
@@ -64,7 +64,7 @@ export default function DashboardPage() {
     useState<Video["sensitivityStatus"]>("pending");
   const accessDropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const socketUrl = useMemo(() => API_BASE_URL.replace(/\/api$/, ""), []);
+  const socketUrl = useMemo(() => SOCKET_BASE_URL, []);
 
   const loadVideos = useCallback(async () => {
     const params: Record<string, string> = {};
@@ -131,7 +131,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!token) return;
-    const socket = io(socketUrl);
+    const socket = io(socketUrl, {
+      path: "/socket.io",
+      transports: ["polling", "websocket"],
+    });
     socket.emit("auth:join", token);
 
     socket.on("video:created", () => loadVideos().catch(() => undefined));
